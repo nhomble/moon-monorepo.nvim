@@ -1,5 +1,9 @@
 local M = {}
 
+local function basename(path)
+	return path:match("^.+/(.+)$")
+end
+
 local function run_command_in_new_buffer(command)
 	-- Create a new buffer
 	local buf = vim.api.nvim_create_buf(false, true)
@@ -65,9 +69,19 @@ M.get_project_tasks = function()
 			table.insert(tasks, t)
 		end
 
-		ret[p.alias] = {
+		local key = p.config.id
+		if key == vim.NIL then
+			key = basename(p.root)
+		end
+		
+		ret[key] = {
 			tasks = tasks,
 			root = p.root,
+			alias = p.alias,
+			source = p.source,
+			config = {
+				id = p.config.id
+			}
 		}
 	end
 

@@ -25,9 +25,14 @@ M.navigate = function(state, path)
 				}
 			})
 		end
+		local display_name = data.alias
+		-- TODO not leak vim.NIL
+		if display_name == vim.NIL then
+			display_name = project
+		end
 		table.insert(items, {
 			id = project,
-			name = project,
+			name = display_name,
 			type = "directory",
 			children = taskItems,
 			extra = {
