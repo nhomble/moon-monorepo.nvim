@@ -25,6 +25,12 @@ M.navigate = function(state, path)
 				}
 			})
 		end
+		table.insert(taskItems, {
+			id = data.root .. "/moon.yml",
+			name = "moon.yml",
+			type = "file",
+		})
+
 		local display_name = data.alias
 		-- TODO not leak vim.NIL
 		if display_name == vim.NIL then

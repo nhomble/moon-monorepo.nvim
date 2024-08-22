@@ -23,10 +23,15 @@ M.icon = function(config, node, state)
 		else
 			icon = config.folder_closed or "+"
 		end
-	else
-		if node.type == "task" then
-			icon = [[⚙️"]]
-			highlight = highlights.TASK_ICON
+	elseif node.type == "task" then
+		icon = ""
+		highlight = highlights.TASK_ICON
+	elseif node.type == "file" then
+		local success, web_devicons = pcall(require, "nvim-web-devicons")
+		if success then
+			local devicon, hl = web_devicons.get_icon(node.name, node.ext)
+			icon = devicon or icon
+			highlight = hl or highlight
 		end
 	end
 	return {
