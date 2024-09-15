@@ -11,6 +11,11 @@ M.is_supported = function()
 end
 
 M.navigate = function(state, path)
+	if path == nil then
+		path = vim.fn.getcwd()
+	end
+	state.path = path
+
 	local projectTasks = moon.get_project_tasks()
 	local items = {}
 	for project, data in pairs(projectTasks) do
