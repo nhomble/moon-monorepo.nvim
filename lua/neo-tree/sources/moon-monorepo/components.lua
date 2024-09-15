@@ -7,7 +7,7 @@ M.task = function(config, node, state)
 	local text = node.extra.custom_text or ""
 	local highlight = highlights.DIM_TEXT
 	return {
-		text = text .. "nicolas",
+		text = text,
 		highlight = highlight,
 	}
 end
