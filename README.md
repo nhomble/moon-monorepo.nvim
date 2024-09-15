@@ -20,6 +20,7 @@ neovim tooling for [moon](https://moonrepo.dev/moon) via [neo-tree](https://gith
 					display_name = moon.display_name,
 					source = moon.name,
 				})
+				moon.init()
 			end
 		end,
 	},

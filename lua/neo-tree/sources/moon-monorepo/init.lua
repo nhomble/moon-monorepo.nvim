@@ -1,7 +1,9 @@
 local renderer = require("neo-tree.ui.renderer")
 local moon = require("neo-tree.sources.moon-monorepo.moon")
+local constants = require("neo-tree.sources.moon-monorepo.constants")
+
 local M = {
-	name = "moon-monorepo",
+	name = constants.source_name,
 	display_name = "🌙 moon",
 	default_config = require("neo-tree.sources.moon-monorepo.defaults"),
 }
