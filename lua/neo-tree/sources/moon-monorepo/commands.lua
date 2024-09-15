@@ -21,5 +21,9 @@ M.refresh = function(state)
 	manager.refresh(constants.source_name, state)
 end
 
+M.show_debug_info = function(state)
+	print(vim.inspect(state))
+end
+
 cc._add_common_commands(M)
 return M
