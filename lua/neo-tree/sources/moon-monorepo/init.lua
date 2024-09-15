@@ -22,7 +22,7 @@ M.navigate = function(state, path)
 				type = "task",
 				extra = {
 					moon_cmd = project .. ":" .. t,
-				}
+				},
 			})
 		end
 		table.insert(taskItems, {
