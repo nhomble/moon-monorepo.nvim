@@ -78,15 +78,29 @@ M.get_projects_by_tags = function()
 			table.insert(project_data.tasks, task_name)
 		end
 
-		-- Group by tags
 		if p.config.tags and #p.config.tags > 0 then
+			project_data.tags = p.config.tags
+
 			for _, tag in ipairs(p.config.tags) do
 				if not tags[tag] then
 					tags[tag] = {}
+					table.insert(tags[tag], project_data)
+				else
+					-- Check if project is already in this tag group
+					local already_added = false
+					for _, existing_project in ipairs(tags[tag]) do
+						if existing_project == project_data then
+							already_added = true
+							break
+						end
+					end
+					if not already_added then
+						table.insert(tags[tag], project_data)
+					end
 				end
-				table.insert(tags[tag], project_data)
 			end
 		else
+			project_data.tags = {}
 			table.insert(untagged, project_data)
 		end
 	end
