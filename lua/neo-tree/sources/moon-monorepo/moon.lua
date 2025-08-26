@@ -62,6 +62,61 @@ M.get_project_tasks = function()
 	return ret
 end
 
+M.get_projects_by_tags = function()
+	local project = cmd("FORCE_COLOR=1 moon query projects --json")
+	
+	-- Handle empty or error responses
+	if not project or project == "" or project:match("Error:") then
+		return {
+			tags = {},
+			untagged = {}
+		}
+	end
+	
+	local success, project_info = pcall(vim.fn.json_decode, project)
+	if not success or not project_info or not project_info.projects then
+		return {
+			tags = {},
+			untagged = {}
+		}
+	end
+	
+	local tags = {}
+	local untagged = {}
+	
+	for _, p in ipairs(project_info.projects) do
+		local project_data = {
+			id = p.config.id,
+			alias = p.alias,
+			root = p.root,
+			source = p.source,
+			tasks = {}
+		}
+		
+		-- Extract tasks
+		for task_name, _ in pairs(p.tasks) do
+			table.insert(project_data.tasks, task_name)
+		end
+		
+		-- Group by tags
+		if p.config.tags and #p.config.tags > 0 then
+			for _, tag in ipairs(p.config.tags) do
+				if not tags[tag] then
+					tags[tag] = {}
+				end
+				table.insert(tags[tag], project_data)
+			end
+		else
+			table.insert(untagged, project_data)
+		end
+	end
+	
+	return {
+		tags = tags,
+		untagged = untagged
+	}
+end
+
 M.run = function(moonArgs)
 	run_command_in_new_buffer("moon " .. moonArgs)
 end
