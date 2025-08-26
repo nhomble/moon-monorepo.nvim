@@ -4,7 +4,7 @@ local constants = require("neo-tree.sources.moon-monorepo.constants")
 
 local M = {
 	name = constants.source_name,
-	display_name = "🌙 moon",
+	display_name = "☾ moon",
 	default_config = require("neo-tree.sources.moon-monorepo.defaults"),
 }
 
