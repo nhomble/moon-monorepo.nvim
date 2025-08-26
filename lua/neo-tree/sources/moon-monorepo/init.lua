@@ -19,7 +19,7 @@ M.navigate = function(state, path)
 	state.path = path
 
 	local projectTasks = moon.get_project_tasks()
-	local items = {}
+	local projectItems = {}
 	for project, data in pairs(projectTasks) do
 		local taskItems = {}
 		for _, t in ipairs(data.tasks) do
@@ -43,7 +43,7 @@ M.navigate = function(state, path)
 		if display_name == vim.NIL then
 			display_name = project
 		end
-		table.insert(items, {
+		table.insert(projectItems, {
 			id = project,
 			name = display_name,
 			type = "directory",
@@ -53,6 +53,15 @@ M.navigate = function(state, path)
 			},
 		})
 	end
+
+	local items = {
+		{
+			id = "projects",
+			name = "📁 Projects",
+			type = "directory",
+			children = projectItems,
+		}
+	}
 
 	renderer.show_nodes(items, state)
 end
