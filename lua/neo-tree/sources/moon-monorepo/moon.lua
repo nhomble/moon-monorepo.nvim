@@ -1,4 +1,5 @@
 local M = {}
+local moon_state = require("neo-tree.sources.moon-monorepo.moon_state")
 
 local function basename(path)
 	return path:match("^.+/(.+)$")
@@ -22,22 +23,17 @@ function dir_exists(path)
 	return ok, err
 end
 
-function cmd(command)
-	local handle = io.popen(command)
-	local result = handle:read("*a")
-	handle:close()
-	return result
-end
 
 M.is_moon_monorepo = function()
 	return dir_exists(".moon")
 end
 
+
 M.get_project_tasks = function()
-	local project = cmd("FORCE_COLOR=1 moon query projects --json")
-	local project_info = vim.fn.json_decode(project)
-	local ret = {}
-	for _, p in ipairs(project_info.projects) do
+	local projects_data = moon_state.get_projects_data()
+
+	local project_tasks = {}
+	for _, p in ipairs(projects_data.projects) do
 		local tasks = {}
 		for t, _ in pairs(p.tasks) do
 			table.insert(tasks, t)
@@ -47,8 +43,8 @@ M.get_project_tasks = function()
 		if key == vim.NIL then
 			key = basename(p.root)
 		end
-		
-		ret[key] = {
+
+		project_tasks[key] = {
 			tasks = tasks,
 			root = p.root,
 			alias = p.alias,
@@ -59,32 +55,16 @@ M.get_project_tasks = function()
 		}
 	end
 
-	return ret
+	return project_tasks
 end
 
 M.get_projects_by_tags = function()
-	local project = cmd("FORCE_COLOR=1 moon query projects --json")
-	
-	-- Handle empty or error responses
-	if not project or project == "" or project:match("Error:") then
-		return {
-			tags = {},
-			untagged = {}
-		}
-	end
-	
-	local success, project_info = pcall(vim.fn.json_decode, project)
-	if not success or not project_info or not project_info.projects then
-		return {
-			tags = {},
-			untagged = {}
-		}
-	end
-	
+	local projects_data = moon_state.get_projects_data()
+
 	local tags = {}
 	local untagged = {}
-	
-	for _, p in ipairs(project_info.projects) do
+
+	for _, p in ipairs(projects_data.projects) do
 		local project_data = {
 			id = p.config.id,
 			alias = p.alias,
@@ -92,12 +72,12 @@ M.get_projects_by_tags = function()
 			source = p.source,
 			tasks = {}
 		}
-		
+
 		-- Extract tasks
 		for task_name, _ in pairs(p.tasks) do
 			table.insert(project_data.tasks, task_name)
 		end
-		
+
 		-- Group by tags
 		if p.config.tags and #p.config.tags > 0 then
 			for _, tag in ipairs(p.config.tags) do
@@ -110,11 +90,15 @@ M.get_projects_by_tags = function()
 			table.insert(untagged, project_data)
 		end
 	end
-	
+
 	return {
 		tags = tags,
 		untagged = untagged
 	}
+end
+
+M.refresh_cache = function()
+	moon_state.refresh()
 end
 
 M.run = function(moonArgs)
