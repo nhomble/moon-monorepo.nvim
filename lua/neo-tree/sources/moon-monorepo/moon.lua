@@ -60,8 +60,31 @@ M.is_moon_monorepo = function()
 end
 
 M.get_project_tasks = function()
-	local project = cmd(" moon query projects --json")
-	local project_info = vim.fn.json_decode(project)
+	local handle = io.popen("moon query projects --json")
+	if not handle then
+		vim.notify("Failed to execute moon command", vim.log.levels.ERROR)
+		return {}
+	end
+	
+	local project = handle:read("*a")
+	local success, exit_code = handle:close()
+	
+	if not success or exit_code ~= 0 then
+		vim.notify("Moon command failed with exit code: " .. (exit_code or "unknown"), vim.log.levels.ERROR)
+		return {}
+	end
+	
+	if not project or project == "" then
+		vim.notify("No project data returned from moon", vim.log.levels.WARN)
+		return {}
+	end
+	
+	local ok, project_info = pcall(vim.fn.json_decode, project)
+	if not ok or not project_info or not project_info.projects then
+		vim.notify("Invalid JSON response from moon query", vim.log.levels.ERROR)
+		return {}
+	end
+	
 	local ret = {}
 	for _, p in ipairs(project_info.projects) do
 		local tasks = {}
