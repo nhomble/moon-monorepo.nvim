@@ -12,7 +12,7 @@ local function run_command_in_new_buffer(command)
 	vim.cmd('terminal ' .. command)
 end
 
-function dir_exists(path)
+local function dir_exists(path)
 	local ok, err, code = os.rename(path, path)
 	if not ok then
 		if code == 13 then
