@@ -8,7 +8,7 @@ local cache = {
 }
 
 local function cmd(command)
-	local handle = io.popen(command)
+	local handle = io.popen(command .. " 2>&1")
 	local result = handle:read("*a")
 	handle:close()
 	return result
