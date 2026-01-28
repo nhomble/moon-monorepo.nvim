@@ -1,6 +1,20 @@
 local M = {}
 local moon_state = require("neo-tree.sources.moon-monorepo.moon_state")
 
+--- Convert vim.NIL to actual nil (or fallback value)
+--- JSON decode returns vim.NIL for null values, which doesn't compare equal to nil
+---@param value any
+---@param fallback any?
+---@return any
+local function nil_safe(value, fallback)
+	if value == nil or value == vim.NIL then
+		return fallback
+	end
+	return value
+end
+
+M.nil_safe = nil_safe
+
 local function basename(path)
 	return path:match("^.+/(.+)$")
 end
@@ -39,10 +53,7 @@ M.get_project_tasks = function()
 			table.insert(tasks, t)
 		end
 
-		local key = p.config.id
-		if key == vim.NIL then
-			key = basename(p.root)
-		end
+		local key = nil_safe(p.config.id, basename(p.root))
 
 		project_tasks[key] = {
 			tasks = tasks,

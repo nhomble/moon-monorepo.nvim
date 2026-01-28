@@ -1,6 +1,7 @@
 local renderer = require("neo-tree.ui.renderer")
 local moon = require("neo-tree.sources.moon-monorepo.moon")
 local constants = require("neo-tree.sources.moon-monorepo.constants")
+local nil_safe = moon.nil_safe
 
 local M = {
 	name = constants.source_name,
@@ -34,11 +35,7 @@ M.navigate = function(state, path)
 			for _, project in ipairs(projects) do
 				local taskItems = {}
 
-				-- Handle project.id which might be vim.NIL
-				local project_id = project.id
-				if project_id == vim.NIL then
-					project_id = project.source:match("([^/]+)$")
-				end
+				local project_id = nil_safe(project.id, project.source:match("([^/]+)$"))
 
 				for _, task in ipairs(project.tasks) do
 					table.insert(taskItems, {
@@ -51,10 +48,7 @@ M.navigate = function(state, path)
 					})
 				end
 
-				local display_name = project.alias
-				if display_name == vim.NIL then
-					display_name = project_id
-				end
+				local display_name = nil_safe(project.alias, project_id)
 
 				table.insert(projectChildren, {
 					id = "tag_" .. tagName .. "_" .. project_id,
@@ -103,11 +97,7 @@ M.navigate = function(state, path)
 			type = "file",
 		})
 
-		local display_name = data.alias
-		-- TODO not leak vim.NIL
-		if display_name == vim.NIL then
-			display_name = project
-		end
+		local display_name = nil_safe(data.alias, project)
 		table.insert(projectItems, {
 			id = project,
 			name = display_name,
