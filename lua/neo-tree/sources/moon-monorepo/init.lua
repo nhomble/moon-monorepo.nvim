@@ -1,6 +1,7 @@
 local renderer = require("neo-tree.ui.renderer")
 local moon = require("neo-tree.sources.moon-monorepo.moon")
 local constants = require("neo-tree.sources.moon-monorepo.constants")
+local config = require("neo-tree.sources.moon-monorepo.config")
 local nil_safe = moon.nil_safe
 
 local M = {
@@ -71,7 +72,7 @@ M.navigate = function(state, path)
 
 		table.insert(items, {
 			id = "by_tags",
-			name = "🏷️ By Tags",
+			name = config.options.icons.tags_header .. " Tags",
 			type = "directory",
 			children = tagItems,
 		})
@@ -111,7 +112,7 @@ M.navigate = function(state, path)
 
 	table.insert(items, {
 		id = "projects",
-		name = "📁 Projects",
+		name = config.options.icons.projects_header .. " Projects",
 		type = "directory",
 		children = projectItems,
 	})
@@ -119,6 +120,8 @@ M.navigate = function(state, path)
 	renderer.show_nodes(items, state)
 end
 
-M.setup = function(config, global_config) end
+M.setup = function(opts, global_config)
+	config.setup(opts)
+end
 
 return M

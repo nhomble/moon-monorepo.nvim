@@ -3,6 +3,16 @@ local M = {
 }
 
 M.renderers = {
+	directory = {
+		{ "indent" },
+		{ "icon" },
+		{ "name" },
+	},
+	file = {
+		{ "indent" },
+		{ "icon" },
+		{ "name" },
+	},
 	task = {
 		{ "indent" },
 		{ "icon" },

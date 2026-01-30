@@ -1,9 +1,10 @@
 local highlights = require("neo-tree.ui.highlights")
 local common = require("neo-tree.sources.common.components")
+local config = require("neo-tree.sources.moon-monorepo.config")
 
 local M = {}
 
-M.task = function(config, node, state)
+M.task = function(component_config, node, state)
 	local text = node.extra.custom_text or ""
 	local highlight = highlights.DIM_TEXT
 	return {
@@ -12,19 +13,20 @@ M.task = function(config, node, state)
 	}
 end
 
-M.icon = function(config, node, state)
-	local icon = config.default or " "
-	local padding = config.padding or " "
-	local highlight = config.highlight or highlights.FILE_ICON
+M.icon = function(component_config, node, state)
+	local icons = config.options.icons
+	local icon = " "
+	local padding = component_config.padding or " "
+	local highlight = component_config.highlight or highlights.FILE_ICON
 	if node.type == "directory" then
 		highlight = highlights.DIRECTORY_ICON
 		if node:is_expanded() then
-			icon = config.folder_open or "-"
+			icon = icons.folder_open
 		else
-			icon = config.folder_closed or "+"
+			icon = icons.folder_closed
 		end
 	elseif node.type == "task" then
-		icon = ""
+		icon = icons.task
 		highlight = highlights.TASK_ICON
 	elseif node.type == "file" then
 		local success, web_devicons = pcall(require, "nvim-web-devicons")
@@ -40,8 +42,8 @@ M.icon = function(config, node, state)
 	}
 end
 
-M.name = function(config, node, state)
-	local highlight = config.highlight or highlights.FILE_NAME
+M.name = function(component_config, node, state)
+	local highlight = component_config.highlight or highlights.FILE_NAME
 	if node.type == "directory" then
 		highlight = highlights.DIRECTORY_NAME
 	end
